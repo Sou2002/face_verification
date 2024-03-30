@@ -33,7 +33,22 @@ class CamApp(App):
         layout.add_widget(self.button)
         layout.add_widget(self.verification_label)
 
+        # Setup webcam
+        self.capture = cv2.VideoCapture(0)
+        Clock.schedule_interval(self.update, 1.0/33.0)
+
         return layout
+    
+    # Update webcam feed continuously
+    def update(self, *args):
+        success, frame = self.capture.read()
+        frame = frame[130:130+250, 150:150+250, :]
+
+        # Flip horizontally and converting image to texture
+        buf = cv2.flip(frame, 0).tostring()
+        img_texture = Texture.create(size = (frame.shape[1], frame.shape[0]), colorfmt = 'bgr')
+        img_texture.blit_buffer(buf, colorfmt = 'bgr', bufferfmt = 'ubyte')
+        self.web_cam.texture = img_texture
 
 if __name__ == '__main__':
     CamApp().run()
