@@ -50,5 +50,21 @@ class CamApp(App):
         img_texture.blit_buffer(buf, colorfmt = 'bgr', bufferfmt = 'ubyte')
         self.web_cam.texture = img_texture
 
+    # Need to preprocess the image before passing to the model
+    def preprocess(file_path):
+        # Read in image from file path
+        byte_img = tf.io.read_file(file_path)
+
+        # Load in the image
+        img = tf.io.decode_jpeg(byte_img) 
+        
+        # Resizing
+        img = tf.image.resize(img, (105, 105))
+        
+        # Scaling
+        img = img / 255.0
+        
+        return img
+
 if __name__ == '__main__':
     CamApp().run()
